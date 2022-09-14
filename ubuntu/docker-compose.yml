@@ -1,0 +1,8 @@
+version: "3.9"
+services:
+  app:
+    image: ubuntu:22.04
+    container_name: container_ubuntu_server
+    command: ["sleep", "infinity"]
+    volumes:
+      - ./data:/etc/data
