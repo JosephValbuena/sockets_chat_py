@@ -2,17 +2,23 @@ import socket
 import struct
 import threading
 
-rute = r'C:\Users\josva\Desktop\Workspace\University\2022-2\Sistemas distribuidos\Chat\client2\hosts_received.txt'
+rute = r'C:\Users\josva\Desktop\Workspace\University\2022-2\Sistemas distribuidos\Chat\client1\hosts_received.txt'
 
-host = 'localhost'
-port = 8000
+# -------------------------------------- DECLARACIÓN DE VARIABLES -------------------------------------
+serverHost = 'localhost'
+serverPort = 8000
 
 #Crear socket
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-client.connect((host, port))
+client.connect((serverHost, serverPort))
+
+clients = []
+usernames = []
 
 #Solicito el nombre de usuario
-username = input("Digite su nombre de usuario: ")
+cUsername = input("Digite su nombre de usuario: ")
+
+# -------------------------------------- DECLARACIÓN DE MÉTODOS AUXILIARES ---------------------------------------
 
 def receive_file_size(sck: socket.socket):
     fmt = "<Q"
@@ -35,6 +41,18 @@ def receive_file(sck, filename):
             if chunk:
                 f.write(chunk)
                 received_bytes += len(chunk)
+    f = open(filename, 'r')
+    for fas in f.readlines():
+        splited = fas.split(',')
+        clientSp = []
+        clientSp.append(splited[0])
+        clientSp.append(splited[1])
+        clients.append(clientSp)
+        usernameSP = splited[2].split('\n')
+        usernames.append(usernameSP[0])
+    write_thread = threading.Thread(target=write_mesage)
+    write_thread.start()
+# -------------------------------- DECLARACIÓN DE MÉTODOS PRINCIPALES ----------------------------------
 
 def clientSocket():
     while True:
@@ -43,7 +61,7 @@ def clientSocket():
             if message == "@file":
                 receive_file(client, "hosts-received.txt")
             elif message == "@username":
-                client.send(username.encode())
+                client.send(cUsername.encode())
             else:
                 print(message)
         except:
@@ -53,7 +71,7 @@ def clientSocket():
 
 def write_mesage():
     while True:
-        message = f"{username}: {input('')}"
+        message = f"{cUsername}: {input('')}"
         client.send(message.encode())
 
 receive_thread = threading.Thread(target=clientSocket)
@@ -61,3 +79,4 @@ receive_thread.start()
 
 write_thread = threading.Thread(target=write_mesage)
 write_thread.start()
+

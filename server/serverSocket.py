@@ -2,7 +2,6 @@ import socket
 import os
 import struct
 import threading
-import time
 
 host = 'localhost'
 port = 8000
@@ -18,7 +17,7 @@ print(f"Servidor corrriendo {host}:{port}")
 
 def broadcast(message, _client):
     for client in clients:
-        if client != _client:            
+        if client != _client:
             client.send(message)
 
 def broadcast_file():
@@ -30,6 +29,11 @@ def broadcast_file():
             while read_bytes := f.read(1024):
                 client.sendall(read_bytes)
 
+def writeInFile(rute, content):
+    fileT = open(rute, 'a+')
+    fileT.write(content)
+    fileT.close()
+
 def handle_message(client):
     while True:
         try:
@@ -38,16 +42,11 @@ def handle_message(client):
         except:
             index = clients.index(client)
             username = usernames[index]
-            broadcast(f"chatbot: {username} disconnected".encode())
+            broadcast(f'{username} desconectado'.encode())
             clients.remove(client)
             usernames.remove(username)
             client.close()
             break
-
-def writeInFile(rute, content):
-    fileT = open(rute, 'a+')
-    fileT.write(content)
-    fileT.close()
 
 def socketServer():
     while True:
@@ -58,20 +57,14 @@ def socketServer():
         clients.append(client)
         usernames.append(username)
 
-        print(f"Usuario conectado con la dirección: {str(addr)}")
+        print(f"El usuario {username} se ha conectado")
         content = ''
-        content = f'{addr[0]},{addr[1]},{username}'
+        content = f'{addr[0]},{addr[1]},{username}\n'
         writeInFile(rute, content)
         broadcast_file()
+        broadcast(f'{username} se ha conectado al chat.'.encode(), client)
 
-        #Se envian mensajes a todos
-        message = f"server: {username} se unio al chat".encode()
-        broadcast(message, client)
-        client.send("Conectado al servidor".encode())
-        
-        #Crear un hilo para el manejo de los mensajes
-        thread = threading.Thread(target=handle_message, args=(client,))
-        thread.start()
-
+        thead = threading.Thread(target=handle_message, args=(client,))
+        thead.start()
 
 socketServer()
