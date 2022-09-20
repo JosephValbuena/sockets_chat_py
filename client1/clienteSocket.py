@@ -2,10 +2,10 @@ import socket
 import struct
 import threading
 
-rute = r'C:\Users\josva\Desktop\Workspace\University\2022-2\Sistemas distribuidos\Chat\client1\hosts_received.txt'
+rute = r'hosts_received.txt'
 
 # -------------------------------------- DECLARACIÓN DE VARIABLES -------------------------------------
-serverHost = 'localhost'
+serverHost = '172.17.0.2'
 serverPort = 8000
 
 #Crear socket

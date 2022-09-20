@@ -3,9 +3,9 @@ import os
 import struct
 import threading
 
-host = 'localhost'
+host = '172.17.0.2'
 port = 8000
-rute= r'C:\Users\josva\Desktop\Workspace\University\2022-2\Sistemas distribuidos\Chat\server\hosts.txt'
+rute= r'hosts.txt'
 clients = []
 usernames = []
 
